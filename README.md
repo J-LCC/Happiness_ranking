@@ -32,9 +32,12 @@ En esta primera parte vamos a centrarnos en explorar la base de datos, esto incl
 
 Esto lo podras encontrar en el archivo 1.EDA.Rmd
 
-**¿Existe relación entre la felicidad y el PIB per cápita?** A priori, un país con un PIB per cápita mayor debería mostrar un mayor nivel de calidad de vida (social-económico), por lo que tendría sentido que existiera una fuerte relación entre felicidad y PIB. Y si observamos la gráfica, ¡Así es! Los países del norte de Europa, con las cifras mayores de PIB per cápita son más felices, ocurriendo justo lo contrario en los paises de Africa sub-sahariana. Dentro del archivo o mediante el enlance a Rpubs podemos interactuar con el gráfico https://rpubs.com/JLCC/hapiness_ranking
+**¿Existe relación entre la felicidad y el PIB per cápita?** 
+
+A priori, un país con un PIB per cápita mayor debería mostrar un mayor nivel de calidad de vida (social-económico), por lo que tendría sentido que existiera una fuerte relación entre felicidad y PIB. Y si observamos la gráfica, ¡Así es! Los países del norte de Europa, con las cifras mayores de PIB per cápita son más felices, ocurriendo justo lo contrario en los paises de Africa sub-sahariana. Dentro del archivo o mediante el enlance a Rpubs podemos interactuar con el gráfico https://rpubs.com/JLCC/hapiness_ranking
 
 Claro que el indicador de felicidad puede venir relacionado con una gran de cantidad de variable. El gráfico de correlaciones así nos lo muestra:
+
 ![Captura](https://user-images.githubusercontent.com/54073772/97978536-fc1a1100-1dcd-11eb-8add-d13ff2a4ae05.PNG)
 
 
