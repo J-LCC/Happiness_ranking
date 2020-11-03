@@ -30,7 +30,8 @@ A raíz de este estudio y sus resultados, vamos a usar R para realizar un análi
 
 En esta primera parte vamos a centrarnos en explorar la base de datos, esto incluye un limpiado inicial de datos (focalizado en el tipo de datos y valores nulos), un análisis de la distribución de las variables, así como la correlación entre ellas, y finalmente visualizaciones para un entendimiento inicial.
 
-Esto lo podras encontrar en el archivo 1.EDA.Rmd
+Esto lo podras encontrar en el archivo **1.EDA.Rmd**
+
 
 **¿Existe relación entre la felicidad y el PIB per cápita?** 
 
