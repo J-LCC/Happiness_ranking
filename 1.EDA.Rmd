@@ -1,0 +1,318 @@
+---
+title: "Ranking felicidad mundial 2019"
+author: "Jose Luis Canillas Cambronero"
+date: "03/11/2020"
+output:
+  html_document:
+    code_folding: hide
+    toc : true
+    toc_float: true
+---
+
+<style>
+body {
+text-align: justify}
+</style>
+
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### ¿Qué es el informe sobre Felicidad Mundial?
+
+
+El Informe sobre la Felicidad Mundial es un estudio histórico en el que se clasifican 155 países por sus niveles de felicidad. Se dio a conocer en las Naciones Unidas en un acto de celebración del Día Internacional de la Felicidad el 20 de marzo. 
+
+
+El informe sigue ganando reconocimiento mundial a medida que los gobiernos, las organizaciones y la sociedad civil **utilizan cada vez más los indicadores de felicidad para fundamentar sus decisiones de política.**Destacados expertos en diversos campos - economía, psicología, análisis de encuestas, estadísticas nacionales, salud, política pública y otros - describen cómo las mediciones del bienestar pueden utilizarse eficazmente para evaluar el progreso de las naciones. Los informes examinan el estado de la felicidad en el mundo actual y muestran cómo la nueva ciencia de la felicidad explica las variaciones personales y nacionales de la felicidad.
+
+### ¿Cómo se puntúan los países?
+
+Los puntajes y clasificaciones de felicidad utilizan datos de la Encuesta Mundial de Gallup. Las puntuaciones se basan en las respuestas a la principal pregunta de evaluación de la vida hecha en la encuesta. Esta pregunta, conocida como la escalera Cantril, pide a los encuestados que piensen en una escalera en la que la mejor vida posible para ellos sea un 10 y la peor vida posible sea un 0 y que califiquen sus propias vidas actuales en esa escala. Las puntuaciones proceden de muestras representativas a nivel nacional y **utilizan los pesos de Gallup para que las estimaciones sean representativas.** 
+
+### ¿Qué significa cada variable del estudio?
+
+- **PIB per cápita:** Es un indicador macroeconómico de productividad y desarrollo económico, usado para entregar una visión respecto al rendimiento de las condiciones económicas y sociales de un país.
+
+- **Asistencia social:** Se refiere al apoyo social que tienen las personas sobre su familia o amigos en momentos de adversidad o crisis.
+
+- **Libertades:** Entendemos libertades como todos los derechos propios de un estado libre y democrático, ya sea por la configuración de un estado no autoritario y diversos derechos sobre la ciudadanía.
+
+- **Esperanza de vida:** Cuanto se estima que viva una persona en el momento de su nacimiento si este sigue una vida sana.
+
+- **Percepción de corrupción:** El Índice de Percepción de la Corrupción (IPC) es un índice publicado anualmente por Transparencia Internacional desde 1995 que clasifica a los países "según sus niveles percibidos de corrupción en el sector público, determinados por evaluaciones de expertos y encuestas de opinión".
+
+- **Generosidad:** Propiamente tratada como la cualidad de ser generoso y amable con los demás.
+
+
+A raíz de este estudio y sus resultados, vamos a usar R para realizar un análisis completo de los ratios usados para puntuar a cada país, veremos que ranking tiene cada país, que relación existen entre las variables usadas. **¿Qué determinará que un país sea más feliz que otro? ¿Podrán las variables escogidas explicar que hace que un país sea más feliz que otro y por tanto en última instancia, saber que indicadores macroeconómicos y sociales mejorar?** Todo esto lo veremos en este estudio.
+
+
+
+
+## 1. Carga y análisis exploratorio de datos
+
+Vamos a comenzar cargando los datos concernientes al año 2019 y las librerías necesarios para el desarrollo del estudio. Renombramos las columnas para una mejor visualización:
+
+```{r include=FALSE}
+library(tidyverse)
+library(skimr)
+library(DataExplorer)
+library(hrbrthemes)
+library(plyr)
+library(pander)
+library(kableExtra)
+library(plotly)
+library(gapminder)
+library(GGally)
+library(reactable)
+```
+
+```{r}
+data <- read.csv("C:/Users/Jose/Desktop/proyectos/felicidad_mundial/data.csv", header = TRUE)
+
+
+colnames(data) <- c("pais","region","ranking","puntuacion","PIB_per_capita",
+                     "libertades","esperanza_vida","asistencia_social",
+                     "percepcion_corrupcion","generosidad")
+```
+
+Lo primero que realizamos al cargar los datos es ver si realmente el tipo de dato corresponde con el de cada variable. El paquete skimr nos permite realizar una aproximación inicial a los datos muy atractiva para observar los principales estadísticos.
+
+```{r, render = knitr::normal_print}
+data %>%
+  select(-c(ranking)) %>%
+  skim_without_charts()
+```
+
+
+Vemos como la variable region es tipo carácter, pero lo más correcto sería que fuese factor, ya que categoriza los diferentes países del mundo. Existe un total de 10 regiones para clasificar cada uno de los países. Queremos aumentar la sencillez a la hora de manejar los datos, por lo que vamos a combinar algunas regiones del mundo. Unificamos Asia y América.
+
+
+```{r}
+data$region <- factor(with(data, 
+                            replace(region, 
+                                    region %in% c("Southeastern Asia", "Southern Asia", "Eastern Asia"),
+                                    "East and North Asia") ) ) 
+
+data$region <- as.character(data$region)
+data$region <- factor(with(data, 
+                            replace(region, 
+                                    region %in% c("Latin America and Caribbean", "North America"),
+                                    "North and Latin America") ) ) 
+```
+
+
+En la siguiente tabla, podemos explorar los datos, ver el ranking de los países clasificados por región del mundo y ver la media de cada una de las variables para cada región. En la tabla nos podemos hacer una idea de cómo de felices son cada una de las regiones del mundo.
+
+```{r}
+reac <- data %>%
+  select(-c(percepcion_corrupcion,generosidad)) 
+
+reactable(reac, groupBy = "region", searchable = TRUE, 
+      columns = list(
+            pais = colDef(name = "País", align = "center"),
+            region = colDef(name = "Región", align = "center"),
+            ranking = colDef(name = "Ranking", align = "center"),
+            puntuacion = colDef(name = "Puntuación", align = "center", aggregate = "mean",
+                                format = colFormat(digits = 1)),
+            PIB_per_capita = colDef(name = "PIB per cápita", align = "center", aggregate = "mean",
+                                format = colFormat(digits = 1)),
+            asistencia_social = colDef(name = "Asistencia Social", align = "center", aggregate = "mean",
+                         format = colFormat(digits = 1)),
+            esperanza_vida = colDef(name = "Esperanza de vida", align = "center", aggregate = "mean",
+                                format = colFormat(digits = 1)),
+            libertades = colDef(name = "Libertades", align = "center", aggregate = "mean",
+                                format = colFormat(digits = 1))
+
+))
+```
+
+
+Otro paso importante en una análisis inicial es ver si existe algún valor nulo en los datos. Con plot_missing lo visualizamos de forma muy sencilla.
+
+```{r}
+plot_missing(
+  data    = data, 
+  title   = "Porcentaje de valores nulos",
+  ggtheme = theme_bw(),
+  theme_config = list(legend.position = "none")
+)
+```
+
+De forma detallada vemos la función de densidad de cada una de las variables numéricas. Descartamos la variable ranking ya que solamente es una variable de posición.
+
+```{r fig.height=6, fig.width=8}
+plot_density(
+  data    = data %>% select(-c("ranking")),
+  ncol    = 2,
+  title   = "Distribución variables predictoras",
+  ggtheme = theme_bw(),
+  theme_config = list(
+    plot.title = element_text(size = 14, face = "bold"),
+    strip.text = element_text(colour = "black", size = 12, face = 2)
+  )
+)
+```
+
+Las variables se distribuyen de forma muy diversa. La variable de respuesta que vamos a estudiar es "puntuación". Aquí se recogen las puntuaciones recibidas en cada país a raíz de la valoración que reciben en el resto de ratios, mayor puntuación, mayor positividad en la percepción de felicidad de ese país. 
+
+Vemos en el gráfico como se intuye que **la variable puntuación de aproxima a una distribución normal**, de tipo platicurtico, aunque en el resto de variables la distribución es mucho más asimétrica. Ciertos modelos funcionan mejor o incluso es un requisito que las variables sigan una distribución normal, por lo que podemos lanzar el test de shapiro para contrastar la normalidad de las variables:
+
+<center>
+```{r}
+numeric <- select(data, -c("pais","region","ranking"))
+st<-Map(function(x)cbind(shapiro.test(x)$statistic,shapiro.test(x)$p.value),numeric)
+myout<-ldply(st)
+names(myout)<-c("var","W","p.value")
+pander(myout, justify = "center")
+```
+</center>
+
+El p-valor para la variable de respuesta es mayor al nivel de significación de 0,05 por lo que **si podemos afirmar que la variable se distribuya de forma normal**. Para el resto de variable, aunque el parámetro W es muy cercano a 1, no podemos afirmar que estas se distribuyan como una normal (ya se intuye en el gráfico de sus distribuciones). Habrá que tener en cuenta está distribución del resto de variables a la hora de modelizar los datos.
+
+
+Otro paso fundamental es comprobar la correlación entre las variables. Esto nos proporcionará una idea de que variables serán las mejores candidatas a predictores en la fase de modelización.
+
+```{r}
+plot_correlation(
+  data = data %>% select(-c("ranking")),
+  type = "continuous",
+  title = "Matriz de correlación variables predictoras",
+  theme_config = list(legend.position = "none",
+                      plot.title = element_text(size = 12, face = "bold"),
+                      axis.title = element_blank(),
+                      axis.text.x = element_text(angle = -45, hjust = +0.1)
+  )
+)
+```
+
+Nuestra variable de respuesta **está muy correlacionada con el PIB per cápita, esperanza de vida y asistencia social** y en menor medida con el resto de variables. También hay que tener en cuenta la correlación entre las variables predictoras, por ejemplo, entre esperanza de vida y PIB per cápita, esto puede ser perjudicial, ya que, si existe correlación entre los residuos de estas variables, se arrastran en el modelo, empeorando la precisión.
+
+
+## 2. Visualizaciones de los datos
+
+Hasta ahora hemos realizado un estudio de las variables de forma aislada, pero ¿y si comparamos las variables y no solo eso, sino que mostramos cómo se comportan dependiendo de la región del mundo? En el siguiente tablero vamos a visualizar diversos gráficos muy útiles para comparar y ver cómo se comportan las variables que anteriormente hemos visto que más están relacionadas con la puntuación, veremos cómo varían dependiendo de si se encuentran en la Europa Occidental, América o África Subsahariana.
+
+
+Para mejorar la visualización acotamos los nombres de las regiones.
+
+- Western Europe = W.E
+
+- Sub-Saharan Africa = Saha.A
+
+- North and Latin America = America
+
+```{r fig.height=9, fig.width=10, message=FALSE, warning=FALSE}
+sub <- data %>%
+  filter(region %in% c("Western Europe", "North and Latin America", "Sub-Saharan Africa"))
+
+sub$region <- revalue(sub$region, c("Western Europe"="W.E", "Sub-Saharan Africa"="Saha.A",
+                      "North and Latin America" = "America"))
+
+ggpairs(sub, lower = list(continuous = "smooth"), 
+        mapping = aes(color = region), columns = c("puntuacion","PIB_per_capita","libertades","asistencia_social",
+                                                        "region")) +
+  
+        theme(plot.title = element_text(size = 18, face = "bold"),
+           axis.title = element_text(size = 10)
+)
+```
+
+En la Europa occidental es donde se encuentran los países con mayor puntuación y calidad de vida, por lo que es normal ver que esta región se sitúa como la mejor. En contraposición, las otras dos regiones, como la África subsahariana y América latina obtienen peores resultados. Donde más se acentúa esta diferencia es en el PIB per cápita y en la esperanza de vida. 
+
+El tablero nos ayuda a entender esta diferencia de diversas formas, tanto por la distribución de las variables, vistas en las gráficas de boxplot y la función de densidad, así como la relación lineal entre las diferentes variables para cada una de las regiones. La tendencia es clara, mayor nivel en las métricas implica mayor puntuación y por tanto mayor felicidad. 
+
+
+
+¿Y cual será la relación entre las variables predictoras y la variable de respuesta, vista gráficamente y donde podamos interactuar con los paises del ranking? En esta siguiente tanda de gráficos vamos a mostrar las relaciones entre las variables, por región y mostrando los paises.
+
+
+### ¿Cuál es la relación entre el PIB per cápita y la felicidad de los países?
+
+A priori, un país con un PIB per cápita mayor debería mostrar un mayor nivel de calidad de vida (social-económico), por lo que tendría sentido que existiera una fuerte relación entre felicidad y PIB.
+Y si observamos la gráfica, ¡Así es! **Los países del norte de Europa, con las cifras mayores de PIB per cápita son más felices, ocurriendo justo lo contrario en los países de África subsahariana.**
+
+Los países latinoamericanos se sitúan en la parte superior de la tendencia, son países con menor PIB per cápita y que en cierta forma, tienen una puntuación de felicidad muy elevada, algunos incluso superando a países como Grecia o Portugal.
+
+```{r fig.height=6.5, fig.width=9.5}
+p <- data %>%
+  
+  mutate(text = paste("PIB_per_capita: ", PIB_per_capita, "\nPuntuación: ", puntuacion, 
+                      "\nRegión: ", region, "\nPaís: ", pais, sep = "")) %>%
+  
+  ggplot(aes(PIB_per_capita,puntuacion,size = puntuacion,shape = region,color = region,text = text)) +
+  geom_point(alpha = 0.7, size = 3) +
+  scale_shape_manual(values=c(19,15,3,17,13,18,8)) +
+  theme_ipsum() +
+  labs(title = "Relación PIB y Felicidad", x = "PIB per cápita", y = "Puntuación") +
+  theme(legend.title = element_blank())
+  
+
+set.seed(111)
+ggplotly(p, tooltip="text")
+```
+
+### ¿Cuál es la relación entre la asistencia social y la felicidad de los países?
+
+Recordamos que la asistencia social es la necesidad de tener una familia o amigos en momentos adversos, por lo que una mayor puntuión indicara mayor apoyo social percibido en los ciudadanos de un país.
+
+
+```{r fig.height=6.5, fig.width=9.5}
+p <- data %>%
+  
+  mutate(text = paste("Asistencia social: ", asistencia_social, "\nPuntuación: ", puntuacion, 
+                      "\nRegión: ", region, "\nPaís: ", pais, sep = "")) %>%
+  
+  ggplot(aes(asistencia_social,puntuacion,size = puntuacion,shape = region,color = region,text = text)) +
+  geom_point(alpha = 0.7, size = 3) +
+  scale_shape_manual(values=c(19,15,3,17,13,18,8)) +
+  theme_ipsum() +
+  labs(title = "Relación Asistencia social y Felicidad", x = "Asistencia social", y = "Puntuación") +
+  theme(legend.title = element_blank())
+  
+
+set.seed(111)
+ggplotly(p, tooltip="text")
+```
+
+De nuevo vemos se repite la misma tendencia, los países de Europa occidental están a la cabeza en estados con un gran de nivel de asistencia social, en el top, también se incluyen Estados Unidos y Canadá, Australia y Nueva Zelanda y como país cuyo avance económico en los últimos años ha sido espectacular, la Republica checa.
+
+Podría decirse que estos dos indicadores son fundamentales para demostrar que un país sea más feliz que otro, ya que, en el crecimiento económico y la necesidad de apoyo social, ya sea cuando se pasa un mal momento o necesitas ayuda de un familiar, indican que la ciudadanía de un país tiende a ser más feliz.
+
+
+### ¿Cuál es la relación entre la esperanza de vida y la felicidad de los países?
+
+Como ya hemos visto, la esperanza de vida es la cantidad de años que se espera que viva una persona en un país en concreto. Hay que tener en cuenta, y como bien indicamos al principio, que estos no son los valores reales, sino un peso asignado en la realización del estudio.
+
+```{r fig.height=6.5, fig.width=9.5}
+p3 <- data %>%
+  
+  mutate(text = paste("Esperanza de vida: ", esperanza_vida, "\nPuntuación: ", puntuacion, 
+                      "\nRegión: ", region, "\nPaís: ", pais, sep = "")) %>%
+  
+  ggplot(aes(esperanza_vida,puntuacion,size = puntuacion,shape = region,color = region,text = text)) +
+  geom_point(alpha = 0.7, size = 3) +
+  scale_shape_manual(values=c(19,15,3,17,13,18,8)) +
+  theme_ipsum() +
+  labs(title = "Relación Esperanza de vida y Felicidad", x = "Esperanza de vida", y = "Puntuación") +
+  theme(legend.title = element_blank())
+
+
+set.seed(111)
+ggplotly(p3, tooltip="text")
+```
+
+En este caso tenemos un resultado algo diferente e interesante. Al igual que antes, los países de Europa occidental muestran mejores resultados, pero ahora algunos países asiáticos se sitúan con mayor puntuación en países con mayor esperanza de vida, como son Japón, Hong Kong o Singapur.
+
+
+### Bibliografía
+
+World Happiness Report (2019). Kaggle. https://www.kaggle.com/unsdsn/world-happiness
+
+World Happiness Report Website (2020). https://worldhappiness.report/
