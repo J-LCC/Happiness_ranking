@@ -24,13 +24,17 @@ Los puntajes y clasificaciones de felicidad utilizan datos de la Encuesta Mundia
 
 - **Generosidad:** Propiamente tratada como la cualidad de ser generoso y amable con los demás.
 
-A raíz de este estudio y sus resultados, vamos a usar R para realizar un análisis completo de los ratios usados para puntuar a cada país, veremos que ranking tiene cada país, que relación existen entre las variables usadas. **¿Qué determinará que un país sea más feliz que otro? ¿Podrán las variables escogidas explicar que hace que un país sea más feliz que otro y por tanto en última instancia, saber que indicadores macroeconómicos y sociales mejorar? Todo esto lo veremos en este estudio.**
+A raíz de este estudio y sus resultados, vamos a usar R para realizar un análisis completo de los ratios usados para puntuar a cada país para el año 2019, veremos que ranking tiene cada país, que relación existen entre las variables usadas. **¿Qué determinará que un país sea más feliz que otro? ¿Podrán las variables escogidas explicar que hace que un país sea más feliz que otro y por tanto en última instancia, saber que indicadores macroeconómicos y sociales mejorar? Todo esto lo veremos en este estudio.**
 
 ## EDA y visualizaciones
 
-En esta primera parte vamos a centrarnos en explorar la base de datos, esto incluye un limpiado inicial de datos (focalizado en el tipo de datos y valores nulos), un análisis de la distribución de las variables, así como la correlación entre ellas, y finalmente visualizaciones para un entendimiento inicial.
+El enfoque de este pequeño estudio consiste en una exploración de la base de datos para el año 2019, esto incluye un limpiado inicial de datos (focalizado en el tipo de datos y valores nulos), un análisis de la distribución de las variables, así como la correlación entre ellas, y finalmente visualizaciones para un entendimiento inicial.
 
-Esto lo podras encontrar en el archivo **1.EDA.Rmd**
+Esto lo podras encontrar en el archivo **hapiness_ranking.Rmd**
+
+La distribución de probabilidad de nuestras variables es muy importante para conocer cómo se comportan dichas variables y cuál es su distribución, si se ajusta a una normal, polinómica, logarítmica, etc.
+
+![Captura](https://user-images.githubusercontent.com/54073772/98517654-8d760100-226e-11eb-88ef-4aa92eb83076.PNG)
 
 
 **¿Existe relación entre la felicidad y el PIB per cápita?** A priori, un país con un PIB per cápita mayor debería mostrar un mayor nivel de calidad de vida (social-económico), por lo que tendría sentido que existiera una fuerte relación entre felicidad y PIB. 
@@ -43,4 +47,4 @@ Claro que el indicador de felicidad puede venir relacionado con una gran de cant
 
 
 
-{EN PROGRESO}
+
