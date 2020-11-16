@@ -30,7 +30,7 @@ A raíz de este estudio y sus resultados, vamos a usar R para realizar un análi
 
 El enfoque de este pequeño estudio consiste en una exploración de la base de datos para el año 2019, esto incluye un limpiado inicial de datos (focalizado en el tipo de datos y valores nulos), un análisis de la distribución de las variables, así como la correlación entre ellas, y finalmente visualizaciones para un entendimiento inicial.
 
-Esto lo podras encontrar en el archivo **hapiness_ranking.Rmd**
+Esto lo podras encontrar en el archivo **happiness_ranking.Rmd**
 
 La distribución de probabilidad de nuestras variables es muy importante para conocer cómo se comportan dichas variables y cuál es su distribución, si se ajusta a una normal, polinómica, logarítmica, etc.
 
