@@ -43,7 +43,7 @@ Y si observamos la gráfica, ¡Así es! Los países del norte de Europa, con las
 
 Claro que el indicador de felicidad puede venir relacionado con una gran de cantidad de variable. El gráfico de correlaciones así nos lo muestra:
 
-![Captura](https://user-images.githubusercontent.com/54073772/97978536-fc1a1100-1dcd-11eb-8add-d13ff2a4ae05.PNG)
+![ScreenRecorderProject2](https://user-images.githubusercontent.com/54073772/100219419-45193d00-2f16-11eb-87ff-291cd96cf95e.gif)
 
 
 
