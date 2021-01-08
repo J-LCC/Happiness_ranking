@@ -186,8 +186,11 @@ ggplotly(p2, tooltip="text")
 
 
 
+# ESTOS SON ALGUNOS EJEMPLOS QUE NO TIENEN QUE VER CON EL TRABAJO PRINCIPAL
+        
 
-
+# Para cargar todos los años y crear una lista con los paises comunes en todos los años:
+        
 d2015 <- read.csv("C:/Users/Jose/Desktop/proyectos/felicidad_mundial/Datos/2015.csv", header = TRUE)
 d2016 <- read.csv("C:/Users/Jose/Desktop/proyectos/felicidad_mundial/Datos/2016.csv", header = TRUE)
 d2017 <- read.csv("C:/Users/Jose/Desktop/proyectos/felicidad_mundial/Datos/2017.csv", header = TRUE)
@@ -221,19 +224,7 @@ esquisse::esquisser()
 
 
 
-# pivot_longer()
 
-library(tidyr)
-
-data %>%
-  select(where(is.numeric)) %>%
-  pivot_longer(cols = -c(ranking,puntuacion),
-               names_to = "Variable",
-               values_to = "Valor") %>%
-  ggplot(aes(Valor)) +
-  geom_histogram(bins = 8) +
-  facet_wrap(vars(Variable),
-             scales = "free")
 
 
 
